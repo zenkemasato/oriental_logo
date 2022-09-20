@@ -14,7 +14,7 @@ const scene = new THREE.Scene();
 // camera 
 const camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
 camera.position.z =0;
-// camera.position.z =35;
+// camera.position.z =36;
 scene.add(camera);
 
 // renderer
@@ -28,35 +28,6 @@ const ring = new THREE.Mesh( oGeometry, oMaterial );
 scene.add( ring );
 
 // Sのモデリング
-
-// class CustomSinCurve extends THREE.Curve {
-
-// 	constructor( scale = 1 ) {
-
-// 		super();
-
-// 		this.scale = scale;
-// 	}
-
-// 	getPoint( t, optionalTarget = new THREE.Vector3() ) {
-
-// 		const tx = Math.sin( 2 * Math.PI * t );
-// 		const ty = t * 3 - 1.5;
-// 		const tz = 3.3;
-
-// 		return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale );
-
-// 	}
-
-// }
-
-// const path = new CustomSinCurve( 5 );
-// const sGeometry = new THREE.TubeGeometry( path, 100, 1, 3, false );
-// const sMaterial = new THREE.MeshBasicMaterial( { color: 0x000080 } );
-// const tube = new THREE.Mesh( sGeometry, sMaterial );
-// tube.rotation.z -= Math.PI/6;
-// scene.add( tube );
-
 const textS = new THREE.Mesh(
   new TextGeometry("S", {
     font: font, // フォントを指定 (FontLoaderで読み込んだjson形式のフォント)
@@ -67,26 +38,28 @@ const textS = new THREE.Mesh(
     color: 0x000080, // 文字の色
   })
 );
-textS.position.set(-7, -7.9, 14);   // Meshの位置を設定
+textS.position.set(-7, -7.7, 14); // Meshの位置を設定
 textS.scale.set(0.01, 0.01, 0.01); // Meshの拡大縮小設定
 scene.add(textS);
 
-
 // クロスのモデリング
-const geometryOne = new THREE.CapsuleGeometry( 1, 35, 1, 3 );
+
+const geometryOne = new THREE.BoxGeometry( 1, 35, 1 );
 const materialOne = new THREE.MeshBasicMaterial( {color: 0xffffff} );
-const capsuleOne = new THREE.Mesh( geometryOne, materialOne );
-capsuleOne.rotation.z += Math.PI/4;
-capsuleOne.position.z+=10;
-scene.add( capsuleOne );
+const cubeOne = new THREE.Mesh( geometryOne, materialOne );
+cubeOne.rotation.z += Math.PI/4;
+cubeOne.position.x-=710;
+cubeOne.position.y+=710;
+scene.add( cubeOne );
 
-const geometryTwe = new THREE.CapsuleGeometry( 1, 24, 1, 3 );
+const geometryTwe = new THREE.BoxGeometry( 0.5, 25, 1 );
 const materialTwe = new THREE.MeshBasicMaterial( {color: 0xffffff} );
-const capsuleTwe = new THREE.Mesh( geometryTwe, materialTwe );
-capsuleTwe.rotation.z -= Math.PI/4;
-capsuleTwe.position.z+=18;
-
-scene.add( capsuleTwe );
+const cubeTwe = new THREE.Mesh( geometryTwe, materialTwe );
+cubeTwe.rotation.z -= Math.PI/4;
+cubeTwe.position.x +=802;
+cubeTwe.position.y +=802;
+cubeTwe.position.z +=18;
+scene.add( cubeTwe );
 
 // オリエンタル警備の挿入
 
@@ -95,20 +68,21 @@ const textMesh = new THREE.Mesh(
   new TextGeometry("ORIENTAL SECURITY PROTECTION", {
     font: font, // フォントを指定 (FontLoaderで読み込んだjson形式のフォント)
     size: 350,   // 文字のサイズを指定
-    height: 1,  // 文字の厚さを指定
+    height: 5,  // 文字の厚さを指定
   }),
   new THREE.MeshBasicMaterial({
     color: 0x000080, // 文字の色
   })
 );
-textMesh.position.set(-42, -24, 0);   // Meshの位置を設定
+textMesh.position.set(-42, -705, 0);   // Meshの位置を設定
 textMesh.scale.set(0.01, 0.01, 0.01); // Meshの拡大縮小設定
 scene.add(textMesh);
 
 // アニメーション制御
 let time = 1;
+let move = 1;
 function animate() {
-  if (time < 360) {
+  if (time < 1440) {
     time++;
     requestAnimationFrame(animate);
     camera.position.z += 0.1,
@@ -116,6 +90,53 @@ function animate() {
   };
 };
 
+function animationY() {
+  if (time < 1780) {
+    time++;
+    requestAnimationFrame(animationY);
+    cubeOne.position.x+=1.5,
+    cubeOne.position.y-=1.5,
+    renderer.render(scene,camera);
+  };
+};
+
+function animationX() {
+  if(time < 1900){
+    time++;
+    requestAnimationFrame(animationX);
+    cubeTwe.position.x-=1.5,
+    cubeTwe.position.y-=1.5,
+    renderer.render(scene,camera);
+  };
+};
+
+function animationZ() {
+  if (time<2050) {
+    time ++;
+    requestAnimationFrame(animationZ);
+      textMesh.position.y+=1,
+      renderer.render(scene,camera);
+  }
+};
+
+/* ウィンドウ変更時にサイズを維持する処理 */
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+};
+
+$(function() {
+  $(".first-wrap").on("click", function() {//１．クリックしたときに
+    $(".first-wrap").animate({
+     
+    });
+  });
+});
+
+window.addEventListener("resize", onWindowResize);
+
 animate();
-
-
+animationX();
+animationY();
+animationZ();
